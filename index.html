@@ -4,6 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Al Hadi Real Estate | الہادی رئیل اسٹیٹ</title>
+<meta name="description" content="Al Hadi Real Estate — buy, sell, or rent property in Lahore. Houses, apartments, and plots.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Al Hadi Real Estate | الہادی رئیل اسٹیٹ">
+<meta property="og:description" content="Buy, sell, or rent property in Lahore with Al Hadi Real Estate. Houses, apartments, and plots.">
+<meta property="og:image" content="https://al-hadi-realestate.vercel.app/logo-full.jpg">
+<meta property="og:url" content="https://al-hadi-realestate.vercel.app">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Al Hadi Real Estate | الہادی رئیل اسٹیٹ">
+<meta name="twitter:description" content="Buy, sell, or rent property in Lahore with Al Hadi Real Estate.">
+<meta name="twitter:image" content="https://al-hadi-realestate.vercel.app/logo-full.jpg">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#173226">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -29,7 +43,10 @@
   /* NAV */
   header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(23,50,38,0.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);}
   nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;flex-direction:column;color:var(--ivory);}
+  .brand{display:flex;align-items:center;gap:12px;color:var(--ivory);}
+  .brand-logo{height:46px;width:auto;cursor:zoom-in;flex-shrink:0;transition:opacity .2s ease;}
+  .brand-logo:hover{opacity:0.85;}
+  .brand-text{display:flex;flex-direction:column;}
   .brand-en{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;letter-spacing:0.04em;color:var(--gold-soft);}
   .brand-ur{font-family:'Noto Nastaliq Urdu',serif;font-size:1rem;direction:rtl;color:var(--ivory);opacity:0.85;}
   .navlinks{display:flex;gap:34px;list-style:none;}
@@ -177,6 +194,19 @@
   .prop-thumb.apartment{background-image:url('https://images.unsplash.com/photo-1759162788764-f40075c8857f?fm=jpg&q=80&w=800&auto=format&fit=crop');}
   .prop-thumb.plot{background-image:url('https://images.unsplash.com/photo-1714588862918-1490f23f3e56?fm=jpg&q=80&w=800&auto=format&fit=crop');}
   .prop-tag{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--navy-deep);font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:2px;}
+  .prop-thumb{cursor:zoom-in;}
+  .prop-share-btn{
+    position:absolute;top:12px;right:12px;z-index:3;width:34px;height:34px;border-radius:50%;
+    background:rgba(14,32,24,0.75);border:none;display:flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--gold-soft);transition:background .2s ease;
+  }
+  .prop-share-btn:hover{background:rgba(14,32,24,0.95);}
+
+  /* LIGHTBOX */
+  .lightbox{display:none;position:fixed;inset:0;z-index:2000;background:rgba(10,18,14,0.94);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}
+  .lightbox.open{display:flex;}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:4px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+  .lightbox-close{position:absolute;top:20px;right:26px;background:none;border:none;color:var(--ivory);font-size:1.8rem;cursor:pointer;z-index:2001;}
   .prop-body{padding:22px 24px 26px;}
   .prop-body h3{font-size:1.25rem;color:var(--navy-deep);margin-bottom:6px;}
   .prop-loc{font-size:0.82rem;color:var(--slate);margin-bottom:14px;}
@@ -240,8 +270,11 @@
 <header>
   <nav>
     <div class="brand">
-      <span class="brand-en">Al Hadi Real Estate</span>
-      <span class="brand-ur">الہادی رئیل اسٹیٹ</span>
+      <img src="logo-full.jpg" alt="Al Hadi Real Estate Logo" class="brand-logo" onclick="openLightbox('logo-full.jpg')">
+      <div class="brand-text">
+        <span class="brand-en">Al Hadi Real Estate</span>
+        <span class="brand-ur">الہادی رئیل اسٹیٹ</span>
+      </div>
     </div>
     <ul class="navlinks">
       <li><a href="#about">About</a></li>
@@ -250,6 +283,7 @@
       <li><a href="#contact">Contact</a></li>
     </ul>
     <a href="#contact" class="nav-cta">Enquire Now</a>
+    <button id="installBtn" class="admin-link" onclick="installApp()" style="border:none;background:none;cursor:pointer;">Install App</button>
     <a href="#" class="admin-link" onclick="openAdmin();return false;">Admin</a>
     <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
   </nav>
@@ -258,6 +292,7 @@
     <a href="#services" onclick="closeMobileNav()">Services</a>
     <a href="#properties" onclick="closeMobileNav()">Properties</a>
     <a href="#contact" onclick="closeMobileNav()">Contact</a>
+    <a href="#" id="installBtnMobile" onclick="closeMobileNav();installApp();return false;">Install App</a>
     <a href="#" onclick="closeMobileNav();openAdmin();return false;">Admin</a>
   </div>
 </header>
@@ -469,6 +504,12 @@
   <div style="margin-top:10px;"><a href="#" class="admin-link" onclick="openAdmin();return false;" style="color:rgba(245,242,234,0.4);">Admin Panel</a></div>
 </footer>
 
+<!-- ===== LIGHTBOX (full-size photo view) ===== -->
+<div class="lightbox" id="lightboxOverlay" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox();event.stopPropagation();" aria-label="Close">✕</button>
+  <img id="lightboxImg" src="" alt="Property photo" onclick="event.stopPropagation();">
+</div>
+
 <!-- ===== ADMIN OVERLAY ===== -->
 <div class="admin-overlay" id="adminOverlay">
   <div class="admin-modal">
@@ -642,6 +683,57 @@
 </script>
 
 <script>
+  /* ---------- INSTALL AS APP (PWA) ---------- */
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(e => console.warn('SW registration failed:', e));
+    });
+  }
+
+  let deferredInstallPrompt = null;
+  const isIos = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+  // The "Install App" links are always visible in the nav / hamburger menu.
+  // If the app is already running as an installed app, there's nothing to install — hide them.
+  if(isStandalone){
+    hideInstallButtons();
+  }
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    deferredInstallPrompt = null;
+    hideInstallButtons();
+  });
+
+  function hideInstallButtons(){
+    const btn = document.getElementById('installBtn');
+    const btnMobile = document.getElementById('installBtnMobile');
+    if(btn) btn.style.display = 'none';
+    if(btnMobile) btnMobile.style.display = 'none';
+  }
+
+  async function installApp(){
+    if(deferredInstallPrompt){
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+      deferredInstallPrompt = null;
+      hideInstallButtons();
+      return;
+    }
+    if(isIos){
+      alert('To install this app on iPhone:\n\n1. Tap the Share button (square with an arrow) at the bottom of Safari\n2. Scroll down and tap "Add to Home Screen"\n3. Tap "Add" in the top right');
+      return;
+    }
+    alert('To install this app:\n\nChrome (Android/desktop): tap the menu (⋮) → "Install app" or "Add to Home screen".\nSamsung Internet: tap the menu → "Add page to" → "Home screen".\n\nIf you don\'t see this option yet, refresh the page once and try again.');
+  }
+</script>
+
+<script>
   /* ---------- MOBILE NAV ---------- */
   function toggleMobileNav(){
     const nav = document.getElementById('mobileNav');
@@ -746,7 +838,12 @@
       const descRow = p.desc ? `<div style="font-size:0.85rem;color:#6b7266;margin-top:10px;line-height:1.6;">${escapeHtml(p.desc)}</div>` : '';
       return `
         <div class="prop-card">
-          <div class="prop-thumb ${thumbClass}" ${thumbStyle}><span class="prop-tag">${escapeHtml(p.tag)}</span></div>
+          <div class="prop-thumb ${thumbClass}" ${thumbStyle} ${p.imgUrl ? `onclick="openLightbox('${escapeAttr(p.imgUrl)}')"` : ''}>
+            <span class="prop-tag">${escapeHtml(p.tag)}</span>
+            <button class="prop-share-btn" onclick="event.stopPropagation();shareProperty('${p.id}')" aria-label="Share">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4" stroke="currentColor" stroke-width="1.5"/></svg>
+            </button>
+          </div>
           <div class="prop-body">
             <h3>${escapeHtml(p.title)}</h3>
             <div class="prop-loc">${escapeHtml(p.loc)}</div>
@@ -756,6 +853,49 @@
           </div>
         </div>`;
     }).join('');
+  }
+
+  /* ---------- LIGHTBOX (view full photo) ---------- */
+  function openLightbox(url){
+    if(!url) return;
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightboxOverlay').classList.add('open');
+  }
+  function closeLightbox(){
+    document.getElementById('lightboxOverlay').classList.remove('open');
+  }
+
+  /* ---------- SHARE A PROPERTY (with photo where possible) ---------- */
+  async function shareProperty(id){
+    const p = currentProperties.find(x => x.id === id);
+    if(!p) return;
+    const lines = [p.title, p.loc];
+    if(p.price) lines.push(p.price);
+    lines.push(`${p.bed} · ${p.bath} · ${p.size}`);
+    if(p.desc) lines.push(p.desc);
+    lines.push('', 'Al Hadi Real Estate', window.location.href);
+    const text = lines.join('\n');
+
+    try{
+      if(navigator.share){
+        if(p.imgUrl && navigator.canShare){
+          try{
+            const resp = await fetch(p.imgUrl);
+            const blob = await resp.blob();
+            const file = new File([blob], 'property.jpg', {type: blob.type || 'image/jpeg'});
+            if(navigator.canShare({files:[file]})){
+              await navigator.share({ title: p.title, text: text, files: [file] });
+              return;
+            }
+          }catch(e){ /* image share not possible here — fall through to text share below */ }
+        }
+        await navigator.share({ title: p.title, text: text });
+      }else{
+        window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+      }
+    }catch(e){
+      // user cancelled the share sheet — nothing to do
+    }
   }
 
   function escapeHtml(str){
