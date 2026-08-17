@@ -1204,28 +1204,36 @@
     if(tab === 'settings') document.getElementById('fMapLoc').value = siteSettings.mapQuery;
   }
 
-  /* ---------- PHOTO UPLOAD (Firebase Storage) ---------- */
+  /* ---------- PHOTO UPLOAD (Cloudinary) ---------- */
+  const CLOUDINARY_CLOUD_NAME = 'hetzkyb7';
+  const CLOUDINARY_UPLOAD_PRESET = 'ml_default';
+
   document.getElementById('fImgFile').addEventListener('change', handleImageUpload);
 
   async function handleImageUpload(e){
     const files = Array.from(e.target.files || []);
     if(!files.length) return;
     const status = document.getElementById('uploadStatus');
-    if(!firebaseReady || !storageRef){
-      status.textContent = 'Firebase Storage is not connected yet.';
-      return;
-    }
     const urls = [];
     try{
       for(let i=0;i<files.length;i++){
         const file = files[i];
         status.textContent = `Uploading ${i+1} of ${files.length}...`;
-        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
-        const path = 'properties/' + Date.now() + '_' + i + '_' + safeName;
-        const ref = storageRef.ref().child(path);
-        await ref.put(file);
-        const url = await ref.getDownloadURL();
-        urls.push(url);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        formData.append('folder', 'properties');
+
+        const resp = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: formData
+        });
+        if(!resp.ok){
+          const errBody = await resp.text();
+          throw new Error('Cloudinary upload failed: ' + resp.status + ' ' + errBody);
+        }
+        const data = await resp.json();
+        urls.push(data.secure_url);
       }
       const ta = document.getElementById('fImgUrls');
       const existing = ta.value.trim();
@@ -1233,10 +1241,11 @@
       status.textContent = `Uploaded ${urls.length} photo(s) — added below.`;
     }catch(err){
       console.error('Upload error:', err);
-      status.textContent = 'Upload failed. Check Firebase Storage rules and try again.';
+      status.textContent = 'Upload failed. Check console for details, and try again.';
     }
     e.target.value = '';
   }
+
 
   /* ---------- ADD / EDIT / DELETE ---------- */
   function resetForm(){
