@@ -214,7 +214,8 @@
   .detail-body h3{font-size:1.5rem;color:var(--navy-deep);margin-bottom:4px;}
   .detail-loc{font-size:0.9rem;color:var(--slate);margin-bottom:10px;}
   .detail-price{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--gold);margin-bottom:14px;}
-  .detail-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:0.85rem;color:#6b7266;border-top:1px solid #eee7d5;border-bottom:1px solid #eee7d5;padding:14px 0;margin-bottom:16px;}
+  .detail-meta{display:flex;gap:16px;flex-wrap:wrap;font-size:0.9rem;color:#454a44;font-weight:400;border-top:1px solid #eee7d5;border-bottom:1px solid #eee7d5;padding:14px 0;margin-bottom:16px;}
+  .detail-meta span{background:#f4f1e6;padding:5px 12px;border-radius:3px;}
   .detail-desc{font-size:0.92rem;color:#454a44;line-height:1.7;margin-bottom:22px;}
   .detail-wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;background:#25D366;color:#fff;border:none;padding:14px;border-radius:4px;font-size:0.9rem;letter-spacing:0.04em;text-transform:uppercase;font-weight:500;cursor:pointer;}
   .detail-wa-btn:hover{background:#20bd5a;}
@@ -956,7 +957,7 @@
       const descRow = p.desc ? `<div style="font-size:0.85rem;color:#6b7266;margin-top:10px;line-height:1.6;">${escapeHtml(p.desc)}</div>` : '';
       return `
         <div class="prop-card">
-          <div class="prop-thumb ${thumbClass}" ${thumbStyle} ${p.imgUrl ? `onclick="openLightbox('${escapeAttr(p.imgUrl)}')"` : ''}>
+          <div class="prop-thumb ${thumbClass}" ${thumbStyle} onclick="openDetail('${p.id}')">
             <span class="prop-tag">${escapeHtml(p.tag)}</span>
             <button class="prop-share-btn" onclick="event.stopPropagation();openDetail('${p.id}')" aria-label="View details">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4" stroke="currentColor" stroke-width="1.5"/></svg>
@@ -986,6 +987,14 @@
   /* ---------- PROPERTY DETAIL MODAL ---------- */
   let currentDetailProperty = null;
 
+  // Same stock photos used for the card thumbnails (.prop-thumb.house/.apartment/.plot in the CSS)
+  // — used here too so the detail popup always shows *some* photo, even before a real one is uploaded.
+  const STOCK_PHOTOS = {
+    house: 'https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?fm=jpg&q=80&w=800&auto=format&fit=crop',
+    apartment: 'https://images.unsplash.com/photo-1759162788764-f40075c8857f?fm=jpg&q=80&w=800&auto=format&fit=crop',
+    plot: 'https://images.unsplash.com/photo-1714588862918-1490f23f3e56?fm=jpg&q=80&w=800&auto=format&fit=crop'
+  };
+
   function openDetail(id){
     const p = currentProperties.find(x => x.id === id);
     if(!p) return;
@@ -1004,15 +1013,14 @@
     document.getElementById('detailDesc').textContent = p.desc || '';
     document.getElementById('detailDesc').style.display = p.desc ? 'block' : 'none';
 
+    const displayImg = p.imgUrl || STOCK_PHOTOS[p.imgClass] || STOCK_PHOTOS.house;
     const imgBox = document.getElementById('detailImg');
-    if(p.imgUrl){
-      imgBox.style.backgroundImage = `url('${p.imgUrl.replace(/'/g,"\\'")}')`;
-      imgBox.style.cursor = 'zoom-in';
-    }else{
-      imgBox.style.backgroundImage = 'none';
-      imgBox.style.background = 'var(--navy-deep)';
-      imgBox.style.cursor = 'default';
-    }
+    imgBox.style.background = '';
+    imgBox.style.backgroundImage = `url('${displayImg.replace(/'/g,"\\'")}')`;
+    imgBox.style.backgroundSize = 'cover';
+    imgBox.style.backgroundPosition = 'center';
+    imgBox.style.cursor = 'zoom-in';
+    currentDetailProperty._displayImg = displayImg;
 
     const waBtn = document.getElementById('detailWaBtn');
     waBtn.onclick = () => sendWhatsAppEnquiry(p);
@@ -1025,8 +1033,8 @@
   }
 
   function openLightboxFromDetail(){
-    if(currentDetailProperty && currentDetailProperty.imgUrl){
-      openLightbox(currentDetailProperty.imgUrl);
+    if(currentDetailProperty && currentDetailProperty._displayImg){
+      openLightbox(currentDetailProperty._displayImg);
     }
   }
 
