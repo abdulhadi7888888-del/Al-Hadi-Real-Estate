@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Al Hadi Real Estate | الہادی رئیل اسٹیٹ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Nastaliq+Urdu:wght@400;600;700&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#173226;
+    --navy-deep:#0e2018;
+    --slate:#6f8f6a;
+    --ivory:#eef2ea;
+    --gold:#c69a3e;
+    --gold-soft:#e3c983;
+    --charcoal:#20241f;
+    --line: rgba(230,214,168,0.22);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--ivory);color:var(--charcoal);font-family:'Jost',sans-serif;font-weight:300;overflow-x:hidden;}
+  .urdu{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;line-height:2.2;}
+  h1,h2,h3,.display{font-family:'Cormorant Garamond',serif;font-weight:600;letter-spacing:0.01em;}
+  a{text-decoration:none;color:inherit;}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px;}
+  a:focus-visible, button:focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+
+  /* NAV */
+  header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(23,50,38,0.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;max-width:1180px;margin:0 auto;}
+  .brand{display:flex;flex-direction:column;color:var(--ivory);}
+  .brand-en{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;letter-spacing:0.04em;color:var(--gold-soft);}
+  .brand-ur{font-family:'Noto Nastaliq Urdu',serif;font-size:1rem;direction:rtl;color:var(--ivory);opacity:0.85;}
+  .navlinks{display:flex;gap:34px;list-style:none;}
+  .navlinks a{color:var(--ivory);font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;position:relative;padding-bottom:4px;opacity:0.85;transition:opacity .25s;}
+  .navlinks a:hover{opacity:1;}
+  .navlinks a::after{content:'';position:absolute;left:0;bottom:0;width:0;height:1px;background:var(--gold);transition:width .3s ease;}
+  .navlinks a:hover::after{width:100%;}
+  .nav-cta{background:var(--gold);color:var(--navy-deep);padding:9px 20px;border-radius:2px;font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;}
+  .menu-btn{display:none;background:none;border:none;color:var(--ivory);font-size:1.6rem;cursor:pointer;}
+  .admin-link{color:rgba(245,242,234,0.45);font-size:0.72rem;letter-spacing:0.08em;text-transform:uppercase;margin-left:10px;}
+  .admin-link:hover{color:var(--gold-soft);}
+
+  /* MOBILE NAV DROPDOWN */
+  .mobile-nav{
+    display:none;flex-direction:column;background:var(--navy-deep);border-top:1px solid var(--line);
+    max-height:0;overflow:hidden;transition:max-height .35s ease;
+  }
+  .mobile-nav.open{max-height:400px;}
+  .mobile-nav a{
+    padding:16px 32px;color:var(--ivory);font-size:0.9rem;letter-spacing:0.08em;text-transform:uppercase;
+    border-bottom:1px solid var(--line);opacity:0.85;
+  }
+  .mobile-nav a:hover{opacity:1;color:var(--gold-soft);}
+
+  /* ===== ADMIN MODAL ===== */
+  .admin-overlay{
+    display:none;position:fixed;inset:0;z-index:1000;background:rgba(14,32,24,0.72);
+    align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(3px);
+  }
+  .admin-overlay.open{display:flex;}
+  .admin-modal{
+    background:var(--ivory);border-radius:6px;max-width:560px;width:100%;max-height:86vh;overflow-y:auto;
+    padding:38px 34px;position:relative;
+  }
+  .admin-modal h2{font-size:1.8rem;color:var(--navy-deep);margin-bottom:6px;}
+  .admin-modal .sub{font-size:0.85rem;color:#6b7266;margin-bottom:26px;}
+  .admin-close{position:absolute;top:18px;right:20px;background:none;border:none;font-size:1.4rem;color:#8a8f7f;cursor:pointer;}
+  .admin-field{margin-bottom:16px;}
+  .admin-field label{display:block;font-size:0.75rem;letter-spacing:0.06em;text-transform:uppercase;color:#6b7266;margin-bottom:6px;}
+  .admin-field input, .admin-field select{
+    width:100%;padding:11px 14px;border:1px solid #d9d2bd;border-radius:3px;font-family:'Jost',sans-serif;
+    font-size:0.95rem;background:#fff;color:var(--charcoal);
+  }
+  .admin-field input:focus, .admin-field select:focus{outline:2px solid var(--gold);border-color:var(--gold);}
+  .admin-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .admin-btn{
+    background:var(--navy-deep);color:var(--ivory);border:none;padding:13px 28px;border-radius:3px;
+    font-size:0.82rem;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;transition:background .25s;
+  }
+  .admin-btn:hover{background:var(--navy);}
+  .admin-btn.secondary{background:none;border:1px solid #d9d2bd;color:var(--charcoal);}
+  .admin-btn.secondary:hover{border-color:var(--navy);}
+  .admin-note{font-size:0.78rem;color:#8a8f7f;background:#efe9d8;padding:12px 14px;border-radius:3px;margin-bottom:20px;line-height:1.6;}
+  .admin-dash-list{margin-top:24px;border-top:1px solid #e7e1d2;padding-top:20px;}
+  .admin-prop-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid #efe9d8;gap:10px;}
+  .admin-prop-row .info{font-size:0.88rem;color:var(--charcoal);}
+  .admin-prop-row .info .tag{color:var(--slate);font-size:0.72rem;text-transform:uppercase;letter-spacing:0.06em;}
+  .admin-prop-row .acts{display:flex;gap:8px;flex-shrink:0;}
+  .admin-prop-row .acts button{background:none;border:1px solid #d9d2bd;border-radius:3px;padding:5px 10px;font-size:0.75rem;cursor:pointer;color:var(--charcoal);}
+  .admin-prop-row .acts button:hover{border-color:var(--navy-deep);}
+  .admin-error{color:#a33;font-size:0.82rem;margin-top:-8px;margin-bottom:14px;display:none;}
+  .admin-error.show{display:block;}
+  .admin-tabs{display:flex;gap:6px;margin-bottom:24px;}
+  .admin-tabs button{background:none;border:1px solid #d9d2bd;border-radius:3px;padding:8px 16px;font-size:0.78rem;letter-spacing:0.05em;text-transform:uppercase;cursor:pointer;color:#6b7266;}
+  .admin-tabs button.active{background:var(--navy-deep);color:var(--ivory);border-color:var(--navy-deep);}
+  #adminUserBadge{font-size:0.82rem;color:var(--slate);margin-bottom:18px;}
+
+  /* HERO */
+  .hero{
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 25% 15%, rgba(198,154,62,0.14), transparent 55%),
+      linear-gradient(180deg, rgba(14,32,24,0.88) 0%, rgba(23,50,38,0.93) 100%),
+      url('https://images.unsplash.com/photo-1757359056339-22968344cce6?fm=jpg&q=80&w=2000&auto=format&fit=crop') center/cover no-repeat;
+    color:var(--ivory);display:flex;align-items:center;position:relative;padding:140px 0 100px;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background-image:linear-gradient(rgba(230,214,168,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(230,214,168,0.045) 1px, transparent 1px);
+    background-size:64px 64px;pointer-events:none;
+  }
+  .hero-inner{position:relative;z-index:2;width:100%;text-align:center;}
+  .eyebrow{color:var(--gold-soft);letter-spacing:0.35em;text-transform:uppercase;font-size:0.72rem;margin-bottom:26px;opacity:0;animation:fadeUp .9s ease forwards;}
+  .hero h1.display{font-size:clamp(3rem,8vw,6rem);line-height:1.02;color:var(--ivory);opacity:0;animation:fadeUp .9s ease .15s forwards;}
+  .hero .en-word{color:var(--gold-soft);font-style:italic;}
+  .hero-ur{font-family:'Noto Nastaliq Urdu',serif;direction:rtl;font-size:clamp(1.6rem,3.4vw,2.4rem);margin-top:14px;color:var(--ivory);opacity:0;animation:fadeUp .9s ease .3s forwards;}
+  .hero-tagline{margin:30px auto 0;max-width:540px;font-size:1.02rem;color:rgba(245,242,234,0.72);opacity:0;animation:fadeUp .9s ease .45s forwards;}
+  .hero-tagline .urdu{display:block;margin-top:8px;font-size:1.15rem;color:rgba(245,242,234,0.8);}
+  .hero-actions{margin-top:44px;display:flex;gap:18px;justify-content:center;flex-wrap:wrap;opacity:0;animation:fadeUp .9s ease .6s forwards;}
+  .btn-primary, .btn-ghost{padding:15px 34px;font-size:0.82rem;letter-spacing:0.14em;text-transform:uppercase;border-radius:2px;transition:all .3s ease;display:inline-block;}
+  .btn-primary{background:var(--gold);color:var(--navy-deep);font-weight:500;}
+  .btn-primary:hover{background:var(--gold-soft);transform:translateY(-2px);}
+  .btn-ghost{border:1px solid rgba(245,242,234,0.4);color:var(--ivory);}
+  .btn-ghost:hover{border-color:var(--gold);color:var(--gold-soft);transform:translateY(-2px);}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+
+  /* Stats bar */
+  .stats{background:var(--navy-deep);border-top:1px solid var(--line);padding:36px 0;}
+  .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;}
+  .stats-grid div{border-right:1px solid var(--line);}
+  .stats-grid div:last-child{border-right:none;}
+  .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;color:var(--gold-soft);}
+  .stat-label{font-size:0.72rem;letter-spacing:0.14em;text-transform:uppercase;color:rgba(245,242,234,0.55);margin-top:4px;}
+
+  /* DIVIDER — signature: architectural key-line motif */
+  .divider{display:flex;align-items:center;justify-content:center;gap:14px;padding:54px 0;background:var(--ivory);}
+  .divider .line{height:1px;width:70px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+
+  /* ABOUT */
+  .about{padding:20px 0 90px;background:var(--ivory);}
+  .about-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:64px;align-items:center;}
+  .about-tag{color:var(--slate);letter-spacing:0.28em;text-transform:uppercase;font-size:0.72rem;margin-bottom:16px;display:block;}
+  .about h2{font-size:2.6rem;color:var(--navy-deep);margin-bottom:20px;}
+  .about p{font-size:1.02rem;line-height:1.85;color:#454a44;margin-bottom:16px;}
+  .about .urdu{font-size:1.2rem;color:#454a44;margin-top:22px;}
+  .about-visual{
+    aspect-ratio:4/5;border-radius:4px;position:relative;overflow:hidden;
+    background:
+      linear-gradient(160deg, rgba(23,50,38,0.35) 0%, rgba(111,143,106,0.25) 130%),
+      url('https://images.unsplash.com/photo-1741156386380-0236c72eb6f9?fm=jpg&q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+  }
+  .about-visual::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 30% 20%, rgba(230,214,168,0.16), transparent 40%), radial-gradient(circle at 75% 75%, rgba(230,214,168,0.10), transparent 45%);}
+  .building-deco{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;}
+
+  /* SERVICES */
+  .services{padding:100px 0;background:var(--navy-deep);color:var(--ivory);position:relative;}
+  .section-head{text-align:center;margin-bottom:64px;}
+  .section-head .about-tag{color:var(--gold-soft);}
+  .section-head h2{font-size:2.6rem;color:var(--ivory);}
+  .service-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);}
+  .service-card{background:var(--navy-deep);padding:44px 34px;transition:background .35s ease;}
+  .service-card:hover{background:#1c3328;}
+  .service-num{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:0.95rem;letter-spacing:0.1em;}
+  .service-card h3{font-size:1.5rem;color:var(--ivory);margin:14px 0 10px;}
+  .service-card p{font-size:0.92rem;color:rgba(245,242,234,0.6);line-height:1.7;}
+
+  /* FEATURED PROPERTIES */
+  .properties{padding:100px 0;background:var(--ivory);}
+  .prop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+  .prop-card{background:#fff;border:1px solid #e7e1d2;border-radius:4px;overflow:hidden;transition:transform .3s ease, box-shadow .3s ease;}
+  .prop-card:hover{transform:translateY(-6px);box-shadow:0 18px 40px rgba(23,50,38,0.12);}
+  .prop-thumb{height:190px;background-size:cover;background-position:center;position:relative;}
+  .prop-thumb::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(14,32,24,0.05) 0%, rgba(14,32,24,0.45) 100%);}
+  .prop-thumb.house{background-image:url('https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?fm=jpg&q=80&w=800&auto=format&fit=crop');}
+  .prop-thumb.apartment{background-image:url('https://images.unsplash.com/photo-1759162788764-f40075c8857f?fm=jpg&q=80&w=800&auto=format&fit=crop');}
+  .prop-thumb.plot{background-image:url('https://images.unsplash.com/photo-1714588862918-1490f23f3e56?fm=jpg&q=80&w=800&auto=format&fit=crop');}
+  .prop-tag{position:absolute;top:14px;left:14px;background:var(--gold);color:var(--navy-deep);font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;padding:5px 12px;border-radius:2px;}
+  .prop-body{padding:22px 24px 26px;}
+  .prop-body h3{font-size:1.25rem;color:var(--navy-deep);margin-bottom:6px;}
+  .prop-loc{font-size:0.82rem;color:var(--slate);margin-bottom:14px;}
+  .prop-meta{display:flex;gap:16px;font-size:0.8rem;color:#6b7266;border-top:1px solid #eee7d5;padding-top:14px;}
+
+  /* WHY */
+  .why{padding:100px 0;background:var(--navy-deep);color:var(--ivory);}
+  .why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:36px;}
+  .why-item{text-align:center;padding:0 10px;}
+  .why-icon{width:56px;height:56px;margin:0 auto 20px;border:1px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--gold-soft);}
+  .why-item h3{font-family:'Jost',sans-serif;font-weight:500;font-size:1.02rem;color:var(--ivory);margin-bottom:8px;letter-spacing:0.02em;}
+  .why-item p{font-size:0.88rem;color:rgba(245,242,234,0.6);line-height:1.6;}
+
+  /* CTA */
+  .order-cta{background:linear-gradient(120deg, var(--navy) 0%, var(--navy-deep) 100%);color:var(--ivory);padding:100px 0;text-align:center;position:relative;overflow:hidden;}
+  .order-cta::after{content:'';position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle, rgba(198,154,62,0.10), transparent 70%);top:-200px;right:-150px;}
+  .order-cta h2{font-size:2.8rem;margin-bottom:16px;position:relative;}
+  .order-cta p{color:rgba(245,242,234,0.7);max-width:480px;margin:0 auto 36px;position:relative;}
+  .order-cta .urdu{font-size:1.2rem;margin-top:10px;color:rgba(245,242,234,0.75);}
+
+  /* CONTACT */
+  .contact{padding:100px 0;background:var(--ivory);}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;}
+  .contact-block h3{font-family:'Jost',sans-serif;text-transform:uppercase;letter-spacing:0.18em;font-size:0.78rem;color:var(--slate);margin-bottom:18px;font-weight:500;}
+  .contact-item{display:flex;gap:16px;margin-bottom:26px;align-items:flex-start;}
+  .contact-item .ic{color:var(--gold);flex-shrink:0;margin-top:2px;}
+  .contact-item .label{font-size:0.7rem;letter-spacing:0.1em;text-transform:uppercase;color:#8a8f7f;margin-bottom:3px;}
+  .contact-item .label.contact-name{font-size:1.15rem;font-weight:700;letter-spacing:0.01em;text-transform:none;color:var(--navy-deep);margin-bottom:4px;}
+  .contact-item .val{font-size:1.05rem;color:var(--navy-deep);}
+  .map-box{background:var(--navy-deep);border-radius:4px;min-height:320px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;color:var(--ivory);}
+  .map-box::before{content:'';position:absolute;inset:0;opacity:0.5;background-image:linear-gradient(rgba(230,214,168,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(230,214,168,0.08) 1px, transparent 1px);background-size:32px 32px;}
+  .map-label{position:relative;text-align:center;padding:20px;}
+  .map-label .pin{color:var(--gold);margin-bottom:10px;}
+  .map-label p{font-size:0.85rem;color:rgba(245,242,234,0.65);}
+  .social-row{display:flex;gap:14px;margin-top:30px;}
+  .social-row a{width:42px;height:42px;border:1px solid var(--navy);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--navy-deep);transition:all .25s ease;}
+  .social-row a:hover{background:var(--navy-deep);color:var(--ivory);border-color:var(--navy-deep);}
+
+  footer{background:var(--navy-deep);color:rgba(245,242,234,0.55);padding:34px 0;text-align:center;font-size:0.82rem;border-top:1px solid var(--line);}
+  footer .urdu{font-size:0.95rem;margin-top:6px;color:rgba(245,242,234,0.5);}
+
+  @media (max-width:860px){
+    .navlinks{display:none;}
+    .menu-btn{display:block;}
+    .mobile-nav{display:flex;}
+    .about-grid, .contact-grid{grid-template-columns:1fr;}
+    .about-visual{order:-1;aspect-ratio:16/9;}
+    .service-grid, .prop-grid{grid-template-columns:1fr;}
+    .why-grid{grid-template-columns:1fr 1fr;}
+    .stats-grid{grid-template-columns:1fr 1fr;}
+    .stats-grid div{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px;}
+    .admin-row{grid-template-columns:1fr;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav>
+    <div class="brand">
+      <span class="brand-en">Al Hadi Real Estate</span>
+      <span class="brand-ur">الہادی رئیل اسٹیٹ</span>
+    </div>
+    <ul class="navlinks">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#properties">Properties</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Enquire Now</a>
+    <a href="#" class="admin-link" onclick="openAdmin();return false;">Admin</a>
+    <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#about" onclick="closeMobileNav()">About</a>
+    <a href="#services" onclick="closeMobileNav()">Services</a>
+    <a href="#properties" onclick="closeMobileNav()">Properties</a>
+    <a href="#contact" onclick="closeMobileNav()">Contact</a>
+    <a href="#" onclick="closeMobileNav();openAdmin();return false;">Admin</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap hero-inner">
+    <span class="eyebrow">Trusted Property Consultants</span>
+    <h1 class="display">Al Hadi <span class="en-word">Real Estate</span></h1>
+    <div class="hero-ur">الہادی رئیل اسٹیٹ</div>
+    <p class="hero-tagline">
+      Buying, selling, and renting property — handled with honesty, experience, and care.
+      <span class="urdu">جائیداد کی خرید و فروخت اور کرایہ داری میں دیانتدار اور تجربہ کار مشاورت۔</span>
+    </p>
+    <div class="hero-actions">
+      <a href="#contact" class="btn-primary">Enquire Now</a>
+      <a href="#properties" class="btn-ghost">View Properties</a>
+    </div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="wrap stats-grid">
+    <div><div class="stat-num">500+</div><div class="stat-label">Properties Sold</div></div>
+    <div><div class="stat-num">15+</div><div class="stat-label">Years Experience</div></div>
+    <div><div class="stat-num">1,200+</div><div class="stat-label">Happy Clients</div></div>
+    <div><div class="stat-num">100%</div><div class="stat-label">Verified Listings</div></div>
+  </div>
+</div>
+
+<div class="divider">
+  <div class="line"></div>
+  <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+    <path d="M5 17L17 6L29 17" stroke="#c69a3e" stroke-width="1.2"/>
+    <path d="M8 15V29H26V15" stroke="#c69a3e" stroke-width="1.2"/>
+    <path d="M14 29V20H20V29" stroke="#c69a3e" stroke-width="1.2"/>
+  </svg>
+  <div class="line"></div>
+</div>
+
+<section class="about" id="about">
+  <div class="wrap about-grid">
+    <div class="about-visual">
+      <div class="building-deco">
+        <svg width="140" height="140" viewBox="0 0 140 140" fill="none">
+          <circle cx="70" cy="70" r="68" stroke="#e6d6a8" stroke-opacity="0.35" stroke-width="1"/>
+          <path d="M40 100V55L70 35L100 55V100" stroke="#e6d6a8" stroke-width="1.3" stroke-opacity="0.85"/>
+          <path d="M58 100V78H82V100" stroke="#e6d6a8" stroke-width="1.3" stroke-opacity="0.85"/>
+        </svg>
+      </div>
+    </div>
+    <div>
+      <span class="about-tag">Our Story</span>
+      <h2>Guiding you home,<br>every step of the way</h2>
+      <p>Al Hadi Real Estate connects buyers, sellers, and tenants with properties that genuinely fit their needs. From residential plots to commercial spaces, our team handles paperwork, negotiation, and site visits so you don't have to.</p>
+      <p>With years of local market knowledge, we help you make confident property decisions — backed by transparency at every stage.</p>
+      <p class="urdu">الہادی رئیل اسٹیٹ آپ کو صحیح جائیداد تلاش کرنے میں مدد دیتا ہے۔ ہماری ٹیم دستاویزات، بات چیت اور سائٹ وزٹ کا مکمل خیال رکھتی ہے۔</p>
+    </div>
+  </div>
+</section>
+
+<section class="services" id="services">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="about-tag">What We Offer</span>
+      <h2>Our Services</h2>
+    </div>
+    <div class="service-grid">
+      <div class="service-card">
+        <span class="service-num">01</span>
+        <h3>Buy Property</h3>
+        <p>Verified residential and commercial listings matched to your budget.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">02</span>
+        <h3>Sell Property</h3>
+        <p>Fair valuation and wide buyer reach to get you the best price.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">03</span>
+        <h3>Rent &amp; Lease</h3>
+        <p>Reliable tenants and landlords matched, with lease support.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">04</span>
+        <h3>Plots &amp; Land</h3>
+        <p>Residential and commercial plots in verified, developing societies.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">05</span>
+        <h3>Property Management</h3>
+        <p>End-to-end management for owners who want a hands-off experience.</p>
+      </div>
+      <div class="service-card">
+        <span class="service-num">06</span>
+        <h3>Legal &amp; Documentation</h3>
+        <p>Transfer, registry, and paperwork handled with full transparency.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="properties" id="properties">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="about-tag" style="color:var(--slate)">Featured</span>
+      <h2 style="color:var(--navy-deep)">Available Properties</h2>
+    </div>
+    <div class="prop-grid" id="propertyGrid">
+      <!-- Properties are rendered here by JavaScript (see script at bottom) -->
+    </div>
+  </div>
+</section>
+
+<section class="why" id="why">
+  <div class="wrap">
+    <div class="section-head">
+      <span class="about-tag" style="color:var(--gold-soft)">Why Choose Us</span>
+      <h2 style="color:var(--ivory)">The Al Hadi Promise</h2>
+    </div>
+    <div class="why-grid">
+      <div class="why-item">
+        <div class="why-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 5h4l2 5-2.5 1.5a11 11 0 005 5L14 14l5 2v4a2 2 0 01-2 2C9.5 22 2 14.5 2 7a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <h3>Trusted Advice</h3>
+        <p>Honest guidance with no hidden agendas or pressure tactics.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12h13M11 6l6 6-6 6" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <h3>Fast Process</h3>
+        <p>Efficient paperwork and follow-ups that save you time.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.2" stroke="currentColor" stroke-width="1.3"/><path d="M5 20c0-3.9 3.1-7 7-7s7 3.1 7 7" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <h3>Local Expertise</h3>
+        <p>Deep knowledge of neighbourhoods, pricing, and market trends.</p>
+      </div>
+      <div class="why-item">
+        <div class="why-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="10" width="18" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/><path d="M7 10V7a5 5 0 0110 0v3" stroke="currentColor" stroke-width="1.3"/></svg></div>
+        <h3>Verified Listings</h3>
+        <p>Every property checked before it's listed with us.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="order-cta" id="enquire">
+  <div class="wrap">
+    <h2 class="display">Looking for a property?</h2>
+    <p>Tell us what you're looking for — buy, sell, or rent — and we'll take it from there.</p>
+    <p class="urdu">جائیداد کی خرید، فروخت یا کرائے کے لیے ابھی رابطہ کریں</p>
+    <div class="hero-actions" style="margin-top:36px;">
+      <a href="#contact" class="btn-primary">Enquire Now</a>
+      <a href="#contact" class="btn-ghost">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap contact-grid">
+    <div class="contact-block">
+      <h3>Get In Touch</h3>
+      <div class="contact-item">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21C12 21 4 14 4 8.5C4 5.5 6.5 3 9.5 3C10.9 3 12 3.8 12 3.8C12 3.8 13.1 3 14.5 3C17.5 3 20 5.5 20 8.5C20 14 12 21 12 21Z" stroke="currentColor" stroke-width="1.3"/></svg></span>
+        <div><div class="label">Office Address</div><div class="val">Hafeez Road, Munshi Hospital, Street No. 40, Bund Road, Lahore</div></div>
+      </div>
+      <div class="contact-item">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h4l2 5-2.5 1.5a11 11 0 005 5L14 14l5 2v4a2 2 0 01-2 2C9.5 22 2 14.5 2 7a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/></svg></span>
+        <div>
+          <div class="label contact-name">Muhammad Boota</div>
+          <div class="val">0300 8448450 · 0310 3158450</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h4l2 5-2.5 1.5a11 11 0 005 5L14 14l5 2v4a2 2 0 01-2 2C9.5 22 2 14.5 2 7a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/></svg></span>
+        <div>
+          <div class="label contact-name">Qasim Raza</div>
+          <div class="val">0313 4586476 · 0324 4996576</div>
+        </div>
+      </div>
+      <div class="contact-item">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.3"/><path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="1.3"/></svg></span>
+        <div><div class="label">Email</div><div class="val">abdulhadi7888888@gmail.com</div></div>
+      </div>
+      <div class="contact-item">
+        <span class="ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.3"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.3"/></svg></span>
+        <div><div class="label">Office Hours</div><div class="val">Mon – Sat · 10:00 AM – 8:00 PM</div></div>
+      </div>
+      <div class="social-row">
+        <a href="https://wa.me/923008448450" target="_blank" rel="noopener" aria-label="WhatsApp"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 5h4l2 5-2.5 1.5a11 11 0 005 5L14 14l5 2v4a2 2 0 01-2 2C9.5 22 2 14.5 2 7a2 2 0 012-2z" stroke="currentColor" stroke-width="1.3"/></svg></a>
+        <a href="https://www.instagram.com/al_hadi_real_state?igsh=OHFlMHhrYmEybmdj&utm_source=qr" target="_blank" rel="noopener" aria-label="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3"/><circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3"/></svg></a>
+        <a href="https://www.facebook.com/profile.php?id=61593199779979&mibextid=wwXIfr&mibextid=wwXIfr" target="_blank" rel="noopener" aria-label="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 8h-2a2 2 0 00-2 2v3H9v3h2v6h3v-6h2l1-3h-3v-2a1 1 0 011-1h2z" stroke="currentColor" stroke-width="1.1"/></svg></a>
+      </div>
+    </div>
+    <div class="map-box" style="padding:0;overflow:hidden;position:relative;">
+      <iframe
+        id="mapIframe"
+        src="https://www.google.com/maps?q=Hafeez+Road+Munshi+Hospital+Street+40+Bund+Road+Lahore&output=embed"
+        width="100%" height="100%" style="border:0;min-height:320px;display:block;"
+        allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
+      <a id="mapLink" href="https://www.google.com/maps?q=Hafeez+Road+Munshi+Hospital+Street+40+Bund+Road+Lahore" target="_blank" rel="noopener" aria-label="Open in Google Maps" style="position:absolute;inset:0;z-index:5;cursor:pointer;"></a>
+      <span style="position:absolute;bottom:12px;right:12px;z-index:6;pointer-events:none;background:rgba(14,32,24,0.85);color:var(--gold-soft);font-size:0.72rem;letter-spacing:0.06em;text-transform:uppercase;padding:7px 12px;border-radius:3px;">Open in Google Maps</span>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>© 2026 Al Hadi Real Estate. All rights reserved.</div>
+  <div class="urdu">تمام حقوق محفوظ ہیں</div>
+  <div style="margin-top:10px;"><a href="#" class="admin-link" onclick="openAdmin();return false;" style="color:rgba(245,242,234,0.4);">Admin Panel</a></div>
+</footer>
+
+<!-- ===== ADMIN OVERLAY ===== -->
+<div class="admin-overlay" id="adminOverlay">
+  <div class="admin-modal">
+    <button class="admin-close" onclick="closeAdmin()" aria-label="Close">✕</button>
+
+    <!-- LOGIN VIEW -->
+    <div id="adminLoginView">
+      <h2>Admin Login</h2>
+      <div class="sub">Sign in with Google to manage properties.</div>
+      <div class="admin-note" id="firebaseSetupNote" style="display:none;">
+        <strong>One-time setup needed:</strong> this panel is wired for real Google Sign-In via Firebase,
+        but needs your Firebase project keys pasted into the code before it will work (see the
+        <code>firebaseConfig</code> section near the bottom of this file, and the <code>ADMIN_EMAILS</code>
+        list). Until that's filled in, the button below won't be able to sign in.
+      </div>
+      <div class="admin-error" id="adminLoginError">This Google account is not authorized as an admin.</div>
+      <button class="admin-btn" id="googleSignInBtn" onclick="signInWithGoogle()" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.5 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.5 6.1 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 10-2 13.5-5.2l-6.2-5.3C29.3 35.4 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.5 5C9.6 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.2 5.3C40.9 36 44 30.6 44 24c0-1.3-.1-2.7-.4-3.5z"/></svg>
+        Sign in with Google
+      </button>
+    </div>
+
+    <!-- DASHBOARD VIEW -->
+    <div id="adminDashView" style="display:none;">
+      <h2>Property Manager</h2>
+      <div id="adminUserBadge"></div>
+      <div class="admin-note">
+        Properties you add or edit here are saved to Firestore and will appear in the "Available Properties"
+        section for anyone viewing this page.
+      </div>
+
+      <div class="admin-tabs">
+        <button class="active" id="tabAdd" onclick="switchTab('add')">Add Property</button>
+        <button id="tabManage" onclick="switchTab('manage')">Manage Listings</button>
+        <button id="tabSettings" onclick="switchTab('settings')">Map Location</button>
+      </div>
+
+      <!-- ADD/EDIT FORM -->
+      <div id="adminFormView">
+        <input type="hidden" id="editId">
+        <div class="admin-field">
+          <label>Title</label>
+          <input type="text" id="fTitle" placeholder="e.g. 5 Marla House">
+        </div>
+        <div class="admin-row">
+          <div class="admin-field">
+            <label>Status Tag</label>
+            <select id="fTag">
+              <option>For Sale</option>
+              <option>For Rent</option>
+              <option>Plot</option>
+            </select>
+          </div>
+          <div class="admin-field">
+            <label>Photo Style</label>
+            <select id="fImgClass">
+              <option value="house">House</option>
+              <option value="apartment">Apartment</option>
+              <option value="plot">Plot / Land</option>
+            </select>
+          </div>
+        </div>
+        <div class="admin-field">
+          <label>Location</label>
+          <input type="text" id="fLoc" placeholder="e.g. Bahria Town, Lahore">
+        </div>
+        <div class="admin-field">
+          <label>Price</label>
+          <input type="text" id="fPrice" placeholder="e.g. 1.2 Crore / 45,000 per month">
+        </div>
+        <div class="admin-row">
+          <div class="admin-field"><label>Bedrooms</label><input type="text" id="fBed" placeholder="e.g. 3 Bed"></div>
+          <div class="admin-field"><label>Bathrooms</label><input type="text" id="fBath" placeholder="e.g. 2 Bath"></div>
+        </div>
+        <div class="admin-row">
+          <div class="admin-field">
+            <label>Size</label>
+            <input type="text" id="fSize" placeholder="e.g. 1250 sqft / 10 Marla">
+          </div>
+          <div class="admin-field">
+            <label>Length x Width (optional)</label>
+            <input type="text" id="fDimensions" placeholder="e.g. 35x70 ft">
+          </div>
+        </div>
+        <div class="admin-field">
+          <label>Description</label>
+          <input type="text" id="fDesc" placeholder="Short details about the property">
+        </div>
+        <div class="admin-field">
+          <label>Photo URLs (one per line — first one is used as the main photo)</label>
+          <textarea id="fImgUrls" rows="3" placeholder="Paste one or more image links, each on its own line" style="width:100%;padding:11px 14px;border:1px solid #d9d2bd;border-radius:3px;font-family:'Jost',sans-serif;font-size:0.95rem;background:#fff;color:var(--charcoal);resize:vertical;"></textarea>
+        </div>
+        <button class="admin-btn" onclick="saveProperty()">Save Property</button>
+        <button class="admin-btn secondary" onclick="resetForm()">Clear Form</button>
+      </div>
+
+      <!-- MANAGE LIST -->
+      <div id="adminManageView" style="display:none;">
+        <div class="admin-dash-list" id="adminPropList"></div>
+      </div>
+
+      <!-- MAP / LOCATION SETTINGS -->
+      <div id="adminSettingsView" style="display:none;">
+        <div class="admin-note">
+          Type an address (e.g. "Main Boulevard, Gulberg, Lahore") or paste GPS coordinates
+          (e.g. "31.5204, 74.3587"). The map on the Contact section will update to that spot for
+          every visitor once you save.
+        </div>
+        <div class="admin-field">
+          <label>Map Location</label>
+          <input type="text" id="fMapLoc" placeholder="e.g. Main Boulevard, Gulberg, Lahore or 31.5204, 74.3587">
+        </div>
+        <button class="admin-btn" onclick="saveSettings()">Save Location</button>
+      </div>
+
+      <div style="margin-top:26px;border-top:1px solid #e7e1d2;padding-top:16px;">
+        <button class="admin-btn secondary" onclick="logoutAdmin()">Log Out</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FIREBASE (real Google Sign-In + database) ===== -->
+<!--
+  SETUP STEPS (one-time, takes about 5 minutes):
+  1. Go to https://console.firebase.google.com and create a free project.
+  2. In the project, click "Build > Authentication > Get started", enable the "Google" sign-in provider.
+  3. Click "Build > Firestore Database > Create database" (start in production mode is fine).
+  4. In Project Settings (gear icon) > General > "Your apps", click the Web icon (</>) to register a web app.
+     Firebase will show you a firebaseConfig object — copy it and paste it below, replacing the placeholder.
+  5. In Firestore, go to the "Rules" tab and set:
+       rules_version = '2';
+       service cloud.firestore {
+         match /databases/{database}/documents {
+           match /site/{doc} {
+             allow read: if true;
+             allow write: if request.auth != null && request.auth.token.email in [ADMIN EMAILS LIST HERE];
+           }
+         }
+       }
+     (List your admin email(s) there too, matching ADMIN_EMAILS below.)
+  6. Deploy this file to Vercel, GitHub Pages, or Firebase Hosting — Google Sign-In needs a real domain,
+     it will not work when the file is just opened locally as file:// or previewed inside Claude.
+-->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+  // PASTE your Firebase project's config here (from Firebase Console > Project Settings > Your apps):
+  const firebaseConfig = {
+    apiKey: "AIzaSyAJ3qu1o_5tBRcw4UNWnhERdlMUBPjf_b0",
+    authDomain: "al-hadi-real-estate-e6707.firebaseapp.com",
+    projectId: "al-hadi-real-estate-e6707",
+    storageBucket: "al-hadi-real-estate-e6707.firebasestorage.app",
+    messagingSenderId: "56608413372",
+    appId: "1:56608413372:web:c8dcf29149196c42a3a2b9"
+  };
+
+  // Only these Google accounts are allowed into the admin panel:
+  const ADMIN_EMAILS = ['abdulhadi7888888@gmail.com'];
+
+  let firebaseReady = false;
+  let db = null;
+  try{
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    firebaseReady = true;
+  }catch(e){
+    console.warn('Firebase not configured yet:', e);
+  }
+</script>
+
+<script>
+  /* ---------- MOBILE NAV ---------- */
+  function toggleMobileNav(){
+    const nav = document.getElementById('mobileNav');
+    nav.classList.toggle('open');
+  }
+  function closeMobileNav(){
+    document.getElementById('mobileNav').classList.remove('open');
+  }
+
+  /* ---------- PROPERTY DATA ---------- */
+  const defaultProperties = [
+    {id:'p1', tag:'For Sale', title:'5 Marla House', loc:'[Area, City]', price:'', bed:'3 Bed', bath:'3 Bath', size:'1250 sqft', dimensions:'', desc:'', imgClass:'house', imgUrls:[], imgUrl:''},
+    {id:'p2', tag:'For Rent', title:'2 Bed Apartment', loc:'[Area, City]', price:'', bed:'2 Bed', bath:'2 Bath', size:'900 sqft', dimensions:'', desc:'', imgClass:'apartment', imgUrls:[], imgUrl:''},
+    {id:'p3', tag:'Plot', title:'10 Marla Plot', loc:'[Society Name, City]', price:'', bed:'Corner', bath:'Residential', size:'10 Marla', dimensions:'', desc:'', imgClass:'plot', imgUrls:[], imgUrl:''}
+  ];
+
+  let currentProperties = [];
+  let isAdmin = false;
+
+  /* ---------- SITE SETTINGS (map location) ---------- */
+  let siteSettings = {
+    mapQuery: 'Hafeez Road Munshi Hospital Street 40 Bund Road Lahore'
+  };
+
+  async function loadSettings(){
+    try{
+      if(firebaseReady){
+        const docSnap = await db.collection('site').doc('settings').get();
+        if(docSnap.exists && docSnap.data().mapQuery){
+          siteSettings.mapQuery = docSnap.data().mapQuery;
+        }
+      }
+    }catch(e){
+      console.warn('Could not load settings, using default:', e);
+    }
+    applyMap();
+  }
+
+  function applyMap(){
+    const q = encodeURIComponent(siteSettings.mapQuery);
+    const iframe = document.getElementById('mapIframe');
+    if(iframe){
+      iframe.src = 'https://www.google.com/maps?q=' + q + '&output=embed';
+    }
+    const link = document.getElementById('mapLink');
+    if(link){
+      link.href = 'https://www.google.com/maps?q=' + q;
+    }
+  }
+
+  async function saveSettings(){
+    const val = document.getElementById('fMapLoc').value.trim();
+    if(!val){ alert('Please enter a location.'); return; }
+    if(!firebaseReady){
+      alert('Firebase is not connected yet, so this can\'t be saved. See the setup note on the login screen.');
+      return;
+    }
+    try{
+      await db.collection('site').doc('settings').set({ mapQuery: val }, { merge: true });
+      siteSettings.mapQuery = val;
+      applyMap();
+      alert('Map location updated.');
+    }catch(e){
+      console.error('Settings save error:', e);
+      alert('Could not save. Please try again.');
+    }
+  }
+
+  async function loadProperties(){
+    try{
+      if(firebaseReady){
+        const docSnap = await db.collection('site').doc('properties').get();
+        currentProperties = docSnap.exists ? docSnap.data().list : defaultProperties;
+      }else{
+        currentProperties = defaultProperties;
+      }
+    }catch(e){
+      currentProperties = defaultProperties;
+
+    }
+    renderProperties();
+  }
+
+  async function saveToStorage(){
+    try{
+      if(firebaseReady){
+        await db.collection('site').doc('properties').set({ list: currentProperties });
+      }
+    }catch(e){
+      console.error('Storage error:', e);
+      alert('Could not save. Please try again.');
+    }
+  }
+
+  function renderProperties(){
+    const grid = document.getElementById('propertyGrid');
+    grid.innerHTML = currentProperties.map(p => {
+      const thumbStyle = p.imgUrl ? `style="background-image:url('${escapeAttr(p.imgUrl)}')"` : '';
+      const thumbClass = p.imgUrl ? '' : (p.imgClass || 'house');
+      const dims = p.dimensions ? `<span>${escapeHtml(p.dimensions)}</span>` : '';
+      const priceRow = p.price ? `<div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);margin-bottom:8px;">${escapeHtml(p.price)}</div>` : '';
+      const descRow = p.desc ? `<div style="font-size:0.85rem;color:#6b7266;margin-top:10px;line-height:1.6;">${escapeHtml(p.desc)}</div>` : '';
+      return `
+        <div class="prop-card">
+          <div class="prop-thumb ${thumbClass}" ${thumbStyle}><span class="prop-tag">${escapeHtml(p.tag)}</span></div>
+          <div class="prop-body">
+            <h3>${escapeHtml(p.title)}</h3>
+            <div class="prop-loc">${escapeHtml(p.loc)}</div>
+            ${priceRow}
+            <div class="prop-meta"><span>${escapeHtml(p.bed)}</span><span>${escapeHtml(p.bath)}</span><span>${escapeHtml(p.size)}</span>${dims}</div>
+            ${descRow}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  function escapeHtml(str){
+    return (str||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  }
+  function escapeAttr(str){ return escapeHtml(str); }
+
+  /* ---------- ADMIN LOGIN (real Google Sign-In via Firebase) ---------- */
+  function openAdmin(){
+    document.getElementById('adminOverlay').classList.add('open');
+    document.getElementById('firebaseSetupNote').style.display = firebaseReady ? 'none' : 'block';
+    document.getElementById('googleSignInBtn').disabled = !firebaseReady;
+    if(isAdmin){ showDashboard(); }
+  }
+  function closeAdmin(){
+    document.getElementById('adminOverlay').classList.remove('open');
+  }
+
+  async function signInWithGoogle(){
+    const err = document.getElementById('adminLoginError');
+    err.classList.remove('show');
+    if(!firebaseReady){ return; }
+    try{
+      const provider = new firebase.auth.GoogleAuthProvider();
+      const result = await firebase.auth().signInWithPopup(provider);
+      const email = (result.user.email || '').toLowerCase();
+      if(!ADMIN_EMAILS.map(e => e.toLowerCase()).includes(email)){
+        await firebase.auth().signOut();
+        err.classList.add('show');
+        return;
+      }
+      isAdmin = true;
+      window._adminEmail = email;
+      showDashboard();
+    }catch(e){
+      console.error('Sign-in error:', e);
+      err.textContent = 'Sign-in failed. Please try again.';
+      err.classList.add('show');
+    }
+  }
+
+  function showDashboard(){
+    document.getElementById('adminLoginView').style.display = 'none';
+    document.getElementById('adminDashView').style.display = 'block';
+    document.getElementById('adminUserBadge').textContent = 'Signed in as ' + (window._adminEmail || '');
+    switchTab('add');
+    renderAdminList();
+  }
+  async function logoutAdmin(){
+    isAdmin = false;
+    if(firebaseReady){
+      try{ await firebase.auth().signOut(); }catch(e){}
+    }
+    document.getElementById('adminLoginView').style.display = 'block';
+    document.getElementById('adminDashView').style.display = 'none';
+  }
+
+  // Keep admin state in sync if Firebase restores a previous session
+  if(typeof firebase !== 'undefined' && firebaseReady){
+    firebase.auth().onAuthStateChanged(user => {
+      if(user && ADMIN_EMAILS.map(e => e.toLowerCase()).includes((user.email||'').toLowerCase())){
+        isAdmin = true;
+        window._adminEmail = user.email.toLowerCase();
+      }
+    });
+  }
+
+  function switchTab(tab){
+    document.getElementById('tabAdd').classList.toggle('active', tab === 'add');
+    document.getElementById('tabManage').classList.toggle('active', tab === 'manage');
+    document.getElementById('tabSettings').classList.toggle('active', tab === 'settings');
+    document.getElementById('adminFormView').style.display = tab === 'add' ? 'block' : 'none';
+    document.getElementById('adminManageView').style.display = tab === 'manage' ? 'block' : 'none';
+    document.getElementById('adminSettingsView').style.display = tab === 'settings' ? 'block' : 'none';
+    if(tab === 'manage') renderAdminList();
+    if(tab === 'settings') document.getElementById('fMapLoc').value = siteSettings.mapQuery;
+  }
+
+  /* ---------- ADD / EDIT / DELETE ---------- */
+  function resetForm(){
+    document.getElementById('editId').value = '';
+    document.getElementById('fTitle').value = '';
+    document.getElementById('fTag').value = 'For Sale';
+    document.getElementById('fImgClass').value = 'house';
+    document.getElementById('fLoc').value = '';
+    document.getElementById('fPrice').value = '';
+    document.getElementById('fBed').value = '';
+    document.getElementById('fBath').value = '';
+    document.getElementById('fSize').value = '';
+    document.getElementById('fDimensions').value = '';
+    document.getElementById('fDesc').value = '';
+    document.getElementById('fImgUrls').value = '';
+  }
+
+  async function saveProperty(){
+    const id = document.getElementById('editId').value;
+    const title = document.getElementById('fTitle').value.trim();
+    if(!title){ alert('Please enter a title.'); return; }
+
+    const imgUrls = document.getElementById('fImgUrls').value
+      .split('\n')
+      .map(s => s.trim())
+      .filter(Boolean);
+
+    const data = {
+      id: id || ('p' + Date.now()),
+      tag: document.getElementById('fTag').value,
+      title: title,
+      loc: document.getElementById('fLoc').value.trim() || '[Area, City]',
+      price: document.getElementById('fPrice').value.trim(),
+      bed: document.getElementById('fBed').value.trim() || '-',
+      bath: document.getElementById('fBath').value.trim() || '-',
+      size: document.getElementById('fSize').value.trim() || '-',
+      dimensions: document.getElementById('fDimensions').value.trim(),
+      desc: document.getElementById('fDesc').value.trim(),
+      imgClass: document.getElementById('fImgClass').value,
+      imgUrls: imgUrls,
+      imgUrl: imgUrls[0] || ''
+    };
+
+    if(id){
+      const idx = currentProperties.findIndex(p => p.id === id);
+      if(idx > -1) currentProperties[idx] = data;
+    }else{
+      currentProperties.push(data);
+    }
+
+    await saveToStorage();
+    renderProperties();
+    renderAdminList();
+    resetForm();
+    switchTab('manage');
+  }
+
+  function editProperty(id){
+    const p = currentProperties.find(p => p.id === id);
+    if(!p) return;
+    document.getElementById('editId').value = p.id;
+    document.getElementById('fTitle').value = p.title;
+    document.getElementById('fTag').value = p.tag;
+    document.getElementById('fImgClass').value = p.imgClass || 'house';
+    document.getElementById('fLoc').value = p.loc;
+    document.getElementById('fPrice').value = p.price || '';
+    document.getElementById('fBed').value = p.bed;
+    document.getElementById('fBath').value = p.bath;
+    document.getElementById('fSize').value = p.size;
+    document.getElementById('fDimensions').value = p.dimensions || '';
+    document.getElementById('fDesc').value = p.desc || '';
+    document.getElementById('fImgUrls').value = (p.imgUrls && p.imgUrls.length ? p.imgUrls : (p.imgUrl ? [p.imgUrl] : [])).join('\n');
+    switchTab('add');
+  }
+
+  async function deleteProperty(id){
+    if(!confirm('Delete this property listing?')) return;
+    currentProperties = currentProperties.filter(p => p.id !== id);
+    await saveToStorage();
+    renderProperties();
+    renderAdminList();
+  }
+
+  function renderAdminList(){
+    const list = document.getElementById('adminPropList');
+    if(currentProperties.length === 0){
+      list.innerHTML = '<p style="color:#8a8f7f;font-size:0.85rem;">No properties yet. Add one from the "Add Property" tab.</p>';
+      return;
+    }
+    list.innerHTML = currentProperties.map(p => `
+      <div class="admin-prop-row">
+        <div class="info"><strong>${escapeHtml(p.title)}</strong><br><span class="tag">${escapeHtml(p.tag)} · ${escapeHtml(p.loc)}</span></div>
+        <div class="acts">
+          <button onclick="editProperty('${p.id}')">Edit</button>
+          <button onclick="deleteProperty('${p.id}')">Delete</button>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  /* ---------- INIT ---------- */
+  loadProperties();
+  loadSettings();
+</script>
+
+</body>
+</html>
