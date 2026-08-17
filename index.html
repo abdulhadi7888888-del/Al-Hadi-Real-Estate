@@ -1100,14 +1100,21 @@
         // Try to attach the actual photo so it shows up inside WhatsApp/Instagram/etc.
         if(photoUrl && navigator.canShare){
           try{
-            const resp = await fetch(photoUrl);
+            const resp = await fetch(photoUrl, {mode:'cors', cache:'no-store'});
+            if(!resp.ok) throw new Error('Image fetch failed: HTTP ' + resp.status);
             const blob = await resp.blob();
             const file = new File([blob], 'property.jpg', {type: blob.type || 'image/jpeg'});
             if(navigator.canShare({files:[file]})){
               await navigator.share({ title: p.title, text: text, files: [file] });
               return;
+            } else {
+              console.warn('Device cannot share this file type, falling back to text+link.');
             }
-          }catch(e){ /* couldn't attach the image (e.g. CORS) — fall back to text+link share below */ }
+          }catch(e){
+            // Couldn't attach the image — almost always a CORS issue on the image host
+            // (Firebase Storage bucket needs a CORS config to allow this site to fetch it).
+            console.error('Photo attach failed, falling back to text+link share:', e);
+          }
         }
         await navigator.share({ title: p.title, text: text });
         return;
