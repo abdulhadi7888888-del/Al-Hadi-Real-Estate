@@ -42,13 +42,13 @@
 
   /* NAV */
   header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(23,50,38,0.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);}
-  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;max-width:1180px;margin:0 auto;}
-  .brand{display:flex;align-items:center;gap:12px;color:var(--ivory);}
+  nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;max-width:1180px;margin:0 auto;gap:16px;flex-wrap:nowrap;}
+  .brand{display:flex;align-items:center;gap:12px;color:var(--ivory);flex-shrink:1;min-width:0;}
   .brand-logo{height:46px;width:auto;cursor:zoom-in;flex-shrink:0;transition:opacity .2s ease;}
   .brand-logo:hover{opacity:0.85;}
-  .brand-text{display:flex;flex-direction:column;}
-  .brand-en{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;letter-spacing:0.04em;color:var(--gold-soft);}
-  .brand-ur{font-family:'Noto Nastaliq Urdu',serif;font-size:1rem;direction:rtl;color:var(--ivory);opacity:0.85;}
+  .brand-text{display:flex;flex-direction:column;min-width:0;}
+  .brand-en{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;letter-spacing:0.04em;color:var(--gold-soft);white-space:nowrap;}
+  .brand-ur{font-family:'Noto Nastaliq Urdu',serif;font-size:1rem;direction:rtl;color:var(--ivory);opacity:0.85;white-space:nowrap;}
   .navlinks{display:flex;gap:34px;list-style:none;}
   .navlinks a{color:var(--ivory);font-size:0.85rem;letter-spacing:0.12em;text-transform:uppercase;position:relative;padding-bottom:4px;opacity:0.85;transition:opacity .25s;}
   .navlinks a:hover{opacity:1;}
@@ -252,6 +252,10 @@
     .navlinks{display:none;}
     .menu-btn{display:block;}
     .mobile-nav{display:flex;}
+    .nav-cta, nav > #installBtn, nav > .admin-link{display:none;}
+    .brand-logo{height:36px;}
+    .brand-en{font-size:1.05rem;white-space:nowrap;}
+    .brand-ur{font-size:0.8rem;}
     .about-grid, .contact-grid{grid-template-columns:1fr;}
     .about-visual{order:-1;aspect-ratio:16/9;}
     .service-grid, .prop-grid{grid-template-columns:1fr;}
@@ -259,6 +263,9 @@
     .stats-grid{grid-template-columns:1fr 1fr;}
     .stats-grid div{border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:16px;}
     .admin-row{grid-template-columns:1fr;}
+  }
+  @media (max-width:400px){
+    .brand-ur{display:none;}
   }
   @media (prefers-reduced-motion: reduce){
     *{animation-duration:0.01ms !important;transition-duration:0.01ms !important;}
@@ -270,7 +277,7 @@
 <header>
   <nav>
     <div class="brand">
-      <img src="logo-full.jpg" alt="Al Hadi Real Estate Logo" class="brand-logo" onclick="openLightbox('logo-full.jpg')">
+      <img src="logo-full.jpg" alt="Al Hadi Real Estate Logo" class="brand-logo" onclick="openLightbox('logo-full.jpg')" onerror="this.style.display='none';">
       <div class="brand-text">
         <span class="brand-en">Al Hadi Real Estate</span>
         <span class="brand-ur">الہادی رئیل اسٹیٹ</span>
