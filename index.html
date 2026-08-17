@@ -309,6 +309,7 @@
     </ul>
     <a href="#contact" class="nav-cta">Enquire Now</a>
     <button id="installBtn" class="admin-link" onclick="installApp()" style="border:none;background:none;cursor:pointer;">Install App</button>
+    <button id="shareAppBtn" class="admin-link" onclick="shareApp()" style="border:none;background:none;cursor:pointer;">Share App</button>
     <a href="#" class="admin-link" onclick="openAdmin();return false;">Admin</a>
     <button class="menu-btn" aria-label="Menu" aria-expanded="false" onclick="toggleMobileNav()">☰</button>
   </nav>
@@ -318,6 +319,7 @@
     <a href="#properties" onclick="closeMobileNav()">Properties</a>
     <a href="#contact" onclick="closeMobileNav()">Contact</a>
     <a href="#" id="installBtnMobile" onclick="closeMobileNav();installApp();return false;">Install App</a>
+    <a href="#" onclick="closeMobileNav();shareApp();return false;">Share App</a>
     <a href="#" onclick="closeMobileNav();openAdmin();return false;">Admin</a>
   </div>
 </header>
@@ -848,6 +850,32 @@
     }
     alert('To install this app:\n\nChrome (Android/desktop): tap the menu (⋮) → "Install app" or "Add to Home screen".\nSamsung Internet: tap the menu → "Add page to" → "Home screen".\n\nIf you don\'t see this option yet, refresh the page once and try again.');
   }
+
+  /* ---------- SHARE APP LINK ---------- */
+  async function shareApp(){
+    const shareData = {
+      title: 'Al Hadi Real Estate | الہادی رئیل اسٹیٹ',
+      text: 'Check out Al Hadi Real Estate — buy, sell, or rent property in Lahore. Install the app:',
+      url: window.location.href.split('#')[0].split('?')[0]
+    };
+    if(navigator.share){
+      try{
+        await navigator.share(shareData);
+        return;
+      }catch(err){
+        if(err && err.name === 'AbortError') return; // user cancelled, do nothing
+        // fall through to fallback below on other errors
+      }
+    }
+    // Fallback: copy link to clipboard, then offer WhatsApp share
+    try{
+      await navigator.clipboard.writeText(shareData.url);
+      alert('App link copied to clipboard!\n\n' + shareData.url + '\n\nYou can now paste and send it to anyone.');
+    }catch(err){
+      const waUrl = 'https://wa.me/?text=' + encodeURIComponent(shareData.text + ' ' + shareData.url);
+      window.open(waUrl, '_blank');
+    }
+  }
 </script>
 
 <script>
@@ -959,7 +987,7 @@
         <div class="prop-card">
           <div class="prop-thumb ${thumbClass}" ${thumbStyle} onclick="openDetail('${p.id}')">
             <span class="prop-tag">${escapeHtml(p.tag)}</span>
-            <button class="prop-share-btn" onclick="event.stopPropagation();openDetail('${p.id}')" aria-label="View details">
+            <button class="prop-share-btn" onclick="event.stopPropagation();shareProperty('${p.id}')" aria-label="Share">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="18" cy="5" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="6" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><circle cx="18" cy="19" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M8.6 10.5l6.8-4M8.6 13.5l6.8 4" stroke="currentColor" stroke-width="1.5"/></svg>
             </button>
           </div>
@@ -1050,6 +1078,47 @@
     lines.push('', shareLink);
     const text = lines.join('\n');
     window.open('https://wa.me/923008448450?text=' + encodeURIComponent(text), '_blank');
+  }
+
+  /* ---------- SHARE (native share sheet — WhatsApp, Facebook, Instagram, etc.) ---------- */
+  async function shareProperty(id){
+    const p = currentProperties.find(x => x.id === id);
+    if(!p) return;
+
+    const shareLink = window.location.origin + '/api/share?id=' + encodeURIComponent(p.id);
+    const lines = [p.title, p.loc];
+    if(p.price) lines.push(p.price);
+    lines.push([p.bed, p.bath, p.size].filter(Boolean).join(' · '));
+    if(p.desc) lines.push(p.desc);
+    lines.push('', 'Al Hadi Real Estate', shareLink);
+    const text = lines.join('\n');
+
+    const photoUrl = p.imgUrl || STOCK_PHOTOS[p.imgClass] || STOCK_PHOTOS.house;
+
+    try{
+      if(navigator.share){
+        // Try to attach the actual photo so it shows up inside WhatsApp/Instagram/etc.
+        if(photoUrl && navigator.canShare){
+          try{
+            const resp = await fetch(photoUrl);
+            const blob = await resp.blob();
+            const file = new File([blob], 'property.jpg', {type: blob.type || 'image/jpeg'});
+            if(navigator.canShare({files:[file]})){
+              await navigator.share({ title: p.title, text: text, files: [file] });
+              return;
+            }
+          }catch(e){ /* couldn't attach the image (e.g. CORS) — fall back to text+link share below */ }
+        }
+        await navigator.share({ title: p.title, text: text });
+        return;
+      }
+    }catch(e){
+      // person cancelled the native share sheet — nothing to do
+      return;
+    }
+
+    // No Web Share API available (e.g. desktop browser) — fall back to opening WhatsApp Web with the text.
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
   }
 
   function escapeHtml(str){
