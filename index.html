@@ -450,7 +450,7 @@
     <p>Tell us what you're looking for — buy, sell, or rent — and we'll take it from there.</p>
     <p class="urdu">جائیداد کی خرید، فروخت یا کرائے کے لیے ابھی رابطہ کریں</p>
     <div class="hero-actions" style="margin-top:36px;">
-      <a href="#contact" class="btn-primary">Enquire Now</a>
+      <a href="https://wa.me/923008448450?text=Hi%2C%20I%27m%20interested%20in%20a%20property.%20Please%20share%20more%20details." target="_blank" rel="noopener" class="btn-primary">Enquire Now</a>
       <a href="#contact" class="btn-ghost">Contact Us</a>
     </div>
   </div>
@@ -601,13 +601,30 @@
             <input type="text" id="fDimensions" placeholder="e.g. 35x70 ft">
           </div>
         </div>
+        <div class="admin-row">
+          <div class="admin-field"><label>Parking</label><input type="text" id="fParking" placeholder="e.g. 2 Cars"></div>
+          <div class="admin-field">
+            <label>Furnished</label>
+            <select id="fFurnished">
+              <option value="">Not specified</option>
+              <option value="Furnished">Furnished</option>
+              <option value="Semi-Furnished">Semi-Furnished</option>
+              <option value="Unfurnished">Unfurnished</option>
+            </select>
+          </div>
+        </div>
         <div class="admin-field">
           <label>Description</label>
           <input type="text" id="fDesc" placeholder="Short details about the property">
         </div>
         <div class="admin-field">
+          <label>Upload Photos (saved to Firebase Storage)</label>
+          <input type="file" id="fImgFile" accept="image/*" multiple style="width:100%;padding:10px 12px;border:1px solid #d9d2bd;border-radius:3px;background:#fff;font-family:'Jost',sans-serif;font-size:0.9rem;">
+          <div id="uploadStatus" style="font-size:0.78rem;color:#8a8f7f;margin-top:6px;"></div>
+        </div>
+        <div class="admin-field">
           <label>Photo URLs (one per line — first one is used as the main photo)</label>
-          <textarea id="fImgUrls" rows="3" placeholder="Paste one or more image links, each on its own line" style="width:100%;padding:11px 14px;border:1px solid #d9d2bd;border-radius:3px;font-family:'Jost',sans-serif;font-size:0.95rem;background:#fff;color:var(--charcoal);resize:vertical;"></textarea>
+          <textarea id="fImgUrls" rows="3" placeholder="Paste image links here, or upload photos above and they'll be added automatically" style="width:100%;padding:11px 14px;border:1px solid #d9d2bd;border-radius:3px;font-family:'Jost',sans-serif;font-size:0.95rem;background:#fff;color:var(--charcoal);resize:vertical;"></textarea>
         </div>
         <button class="admin-btn" onclick="saveProperty()">Save Property</button>
         <button class="admin-btn secondary" onclick="resetForm()">Clear Form</button>
@@ -660,10 +677,34 @@
      (List your admin email(s) there too, matching ADMIN_EMAILS below.)
   6. Deploy this file to Vercel, GitHub Pages, or Firebase Hosting — Google Sign-In needs a real domain,
      it will not work when the file is just opened locally as file:// or previewed inside Claude.
+  7. For photo uploads to work: go to "Build > Storage > Get started" in Firebase Console, then in the
+     Storage "Rules" tab set:
+       rules_version = '2';
+       service firebase.storage {
+         match /b/{bucket}/o {
+           match /properties/{allPaths=**} {
+             allow read: if true;
+             allow write: if request.auth != null && request.auth.token.email in [ADMIN EMAILS LIST HERE];
+           }
+         }
+       }
+-->
+<!--
+  WHY PRODUCT PHOTOS DON'T SHOW IN WHATSAPP LINK PREVIEWS:
+  This site is a single static index.html, so the WhatsApp/Facebook preview image (og:image) is
+  fixed to one logo image for every page and every listing — it can't change per property just
+  from JavaScript, because WhatsApp's preview bot never runs the JavaScript, it only reads the
+  raw HTML meta tags.
+  Fix: the Share button now links to /api/share?id=... (see /api/share.js) — a small serverless
+  function that looks up that one property in Firestore and outputs fresh og:image/og:title tags
+  for exactly that listing, then instantly redirects real visitors to the site. This requires the
+  index.html and /api/share.js to be deployed together on Vercel (already the case if you deploy
+  the whole project folder, not just this single file).
 -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
   // PASTE your Firebase project's config here (from Firebase Console > Project Settings > Your apps):
   const firebaseConfig = {
@@ -680,9 +721,11 @@
 
   let firebaseReady = false;
   let db = null;
+  let storageRef = null;
   try{
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
+    storageRef = firebase.storage();
     firebaseReady = true;
   }catch(e){
     console.warn('Firebase not configured yet:', e);
@@ -752,9 +795,9 @@
 
   /* ---------- PROPERTY DATA ---------- */
   const defaultProperties = [
-    {id:'p1', tag:'For Sale', title:'5 Marla House', loc:'[Area, City]', price:'', bed:'3 Bed', bath:'3 Bath', size:'1250 sqft', dimensions:'', desc:'', imgClass:'house', imgUrls:[], imgUrl:''},
-    {id:'p2', tag:'For Rent', title:'2 Bed Apartment', loc:'[Area, City]', price:'', bed:'2 Bed', bath:'2 Bath', size:'900 sqft', dimensions:'', desc:'', imgClass:'apartment', imgUrls:[], imgUrl:''},
-    {id:'p3', tag:'Plot', title:'10 Marla Plot', loc:'[Society Name, City]', price:'', bed:'Corner', bath:'Residential', size:'10 Marla', dimensions:'', desc:'', imgClass:'plot', imgUrls:[], imgUrl:''}
+    {id:'p1', tag:'For Sale', title:'5 Marla House', loc:'[Area, City]', price:'', bed:'3 Bed', bath:'3 Bath', size:'1250 sqft', dimensions:'', parking:'', furnished:'', desc:'', imgClass:'house', imgUrls:[], imgUrl:''},
+    {id:'p2', tag:'For Rent', title:'2 Bed Apartment', loc:'[Area, City]', price:'', bed:'2 Bed', bath:'2 Bath', size:'900 sqft', dimensions:'', parking:'', furnished:'', desc:'', imgClass:'apartment', imgUrls:[], imgUrl:''},
+    {id:'p3', tag:'Plot', title:'10 Marla Plot', loc:'[Society Name, City]', price:'', bed:'Corner', bath:'Residential', size:'10 Marla', dimensions:'', parking:'', furnished:'', desc:'', imgClass:'plot', imgUrls:[], imgUrl:''}
   ];
 
   let currentProperties = [];
@@ -841,6 +884,8 @@
       const thumbStyle = p.imgUrl ? `style="background-image:url('${escapeAttr(p.imgUrl)}')"` : '';
       const thumbClass = p.imgUrl ? '' : (p.imgClass || 'house');
       const dims = p.dimensions ? `<span>${escapeHtml(p.dimensions)}</span>` : '';
+      const parkingSpan = p.parking ? `<span>${escapeHtml(p.parking)} Parking</span>` : '';
+      const furnishedSpan = p.furnished ? `<span>${escapeHtml(p.furnished)}</span>` : '';
       const priceRow = p.price ? `<div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--gold);margin-bottom:8px;">${escapeHtml(p.price)}</div>` : '';
       const descRow = p.desc ? `<div style="font-size:0.85rem;color:#6b7266;margin-top:10px;line-height:1.6;">${escapeHtml(p.desc)}</div>` : '';
       return `
@@ -855,7 +900,7 @@
             <h3>${escapeHtml(p.title)}</h3>
             <div class="prop-loc">${escapeHtml(p.loc)}</div>
             ${priceRow}
-            <div class="prop-meta"><span>${escapeHtml(p.bed)}</span><span>${escapeHtml(p.bath)}</span><span>${escapeHtml(p.size)}</span>${dims}</div>
+            <div class="prop-meta"><span>${escapeHtml(p.bed)}</span><span>${escapeHtml(p.bath)}</span><span>${escapeHtml(p.size)}</span>${dims}${parkingSpan}${furnishedSpan}</div>
             ${descRow}
           </div>
         </div>`;
@@ -876,11 +921,12 @@
   async function shareProperty(id){
     const p = currentProperties.find(x => x.id === id);
     if(!p) return;
+    const shareLink = window.location.origin + '/api/share?id=' + encodeURIComponent(p.id);
     const lines = [p.title, p.loc];
     if(p.price) lines.push(p.price);
     lines.push(`${p.bed} · ${p.bath} · ${p.size}`);
     if(p.desc) lines.push(p.desc);
-    lines.push('', 'Al Hadi Real Estate', window.location.href);
+    lines.push('', 'Al Hadi Real Estate', shareLink);
     const text = lines.join('\n');
 
     try{
@@ -981,6 +1027,40 @@
     if(tab === 'settings') document.getElementById('fMapLoc').value = siteSettings.mapQuery;
   }
 
+  /* ---------- PHOTO UPLOAD (Firebase Storage) ---------- */
+  document.getElementById('fImgFile').addEventListener('change', handleImageUpload);
+
+  async function handleImageUpload(e){
+    const files = Array.from(e.target.files || []);
+    if(!files.length) return;
+    const status = document.getElementById('uploadStatus');
+    if(!firebaseReady || !storageRef){
+      status.textContent = 'Firebase Storage is not connected yet.';
+      return;
+    }
+    const urls = [];
+    try{
+      for(let i=0;i<files.length;i++){
+        const file = files[i];
+        status.textContent = `Uploading ${i+1} of ${files.length}...`;
+        const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g,'_');
+        const path = 'properties/' + Date.now() + '_' + i + '_' + safeName;
+        const ref = storageRef.ref().child(path);
+        await ref.put(file);
+        const url = await ref.getDownloadURL();
+        urls.push(url);
+      }
+      const ta = document.getElementById('fImgUrls');
+      const existing = ta.value.trim();
+      ta.value = (existing ? existing + '\n' : '') + urls.join('\n');
+      status.textContent = `Uploaded ${urls.length} photo(s) — added below.`;
+    }catch(err){
+      console.error('Upload error:', err);
+      status.textContent = 'Upload failed. Check Firebase Storage rules and try again.';
+    }
+    e.target.value = '';
+  }
+
   /* ---------- ADD / EDIT / DELETE ---------- */
   function resetForm(){
     document.getElementById('editId').value = '';
@@ -993,8 +1073,11 @@
     document.getElementById('fBath').value = '';
     document.getElementById('fSize').value = '';
     document.getElementById('fDimensions').value = '';
+    document.getElementById('fParking').value = '';
+    document.getElementById('fFurnished').value = '';
     document.getElementById('fDesc').value = '';
     document.getElementById('fImgUrls').value = '';
+    document.getElementById('uploadStatus').textContent = '';
   }
 
   async function saveProperty(){
@@ -1017,6 +1100,8 @@
       bath: document.getElementById('fBath').value.trim() || '-',
       size: document.getElementById('fSize').value.trim() || '-',
       dimensions: document.getElementById('fDimensions').value.trim(),
+      parking: document.getElementById('fParking').value.trim(),
+      furnished: document.getElementById('fFurnished').value,
       desc: document.getElementById('fDesc').value.trim(),
       imgClass: document.getElementById('fImgClass').value,
       imgUrls: imgUrls,
@@ -1050,6 +1135,8 @@
     document.getElementById('fBath').value = p.bath;
     document.getElementById('fSize').value = p.size;
     document.getElementById('fDimensions').value = p.dimensions || '';
+    document.getElementById('fParking').value = p.parking || '';
+    document.getElementById('fFurnished').value = p.furnished || '';
     document.getElementById('fDesc').value = p.desc || '';
     document.getElementById('fImgUrls').value = (p.imgUrls && p.imgUrls.length ? p.imgUrls : (p.imgUrl ? [p.imgUrl] : [])).join('\n');
     switchTab('add');
